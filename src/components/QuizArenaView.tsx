@@ -24,6 +24,7 @@ import {
   History,
 } from 'lucide-react';
 import { getQuizHistory, saveQuizAttempt } from '../utils/storage';
+import { recordStudySession } from '../utils/streak';
 
 interface QuizArenaViewProps {
   activeSubject: SubjectType;
@@ -176,6 +177,14 @@ export const QuizArenaView: React.FC<QuizArenaViewProps> = ({
 
     saveQuizAttempt(record);
     setQuizHistory(getQuizHistory());
+
+    // Record study session to build and maintain the user's daily study streak
+    recordStudySession(
+      'quiz',
+      activeSubject,
+      `${currentTopicName} Diagnostic Quiz`,
+      `Score: ${correctCount}/${currentQuiz.questions.length} (${percentage}%)`
+    );
   };
 
   // Score computation

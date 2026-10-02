@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar, MainTab } from './components/Navbar';
 import { ExamBanner } from './components/ExamBanner';
 import { ExamModal } from './components/ExamModal';
+import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { SyllabusView } from './components/SyllabusView';
 import { NotesSimplifierView } from './components/NotesSimplifierView';
 import { QuizArenaView } from './components/QuizArenaView';
@@ -31,6 +32,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<MainTab>('syllabus');
   const [examProfile, setExamProfile] = useState<ExamProfile>(getSavedExamProfile);
   const [isExamModalOpen, setIsExamModalOpen] = useState<boolean>(false);
+  const [isDriveModalOpen, setIsDriveModalOpen] = useState<boolean>(false);
+  const [driveModalPrefill, setDriveModalPrefill] = useState<{ title: string; content: string } | null>(null);
+  const [importedDriveNote, setImportedDriveNote] = useState<{ content: string; fileName: string } | null>(null);
 
   // Syllabus state for active subject
   const [currentSyllabus, setCurrentSyllabus] = useState<SubjectSyllabus>(() =>
@@ -102,6 +106,28 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenDriveModal = (prefilledNote?: { title: string; content: string }) => {
+    if (prefilledNote) {
+      setDriveModalPrefill(prefilledNote);
+    } else {
+      setDriveModalPrefill(null);
+    }
+    setIsDriveModalOpen(true);
+  };
+
+  const handleImportFromDrive = (
+    content: string,
+    fileName: string,
+    suggestedSubject?: SubjectType
+  ) => {
+    if (suggestedSubject) {
+      setActiveSubject(suggestedSubject);
+    }
+    setImportedDriveNote({ content, fileName });
+    setActiveTab('notes');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-100/70 text-slate-900 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900 flex flex-col">
       {/* 1. Exam Banner Notification (Shows whether exam is coming up or regular study) */}
@@ -117,6 +143,7 @@ export default function App() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onOpenExamModal={() => setIsExamModalOpen(true)}
+        onOpenDriveModal={() => handleOpenDriveModal()}
         hasExam={examProfile.hasExam}
         daysRemaining={daysRemaining}
       />
@@ -142,6 +169,8 @@ export default function App() {
             examProfile={examProfile}
             daysRemaining={daysRemaining}
             onLaunchQuizForTopic={handleLaunchQuizFromTitle}
+            onOpenDriveModal={handleOpenDriveModal}
+            importedDriveNote={importedDriveNote}
           />
         )}
 
@@ -175,11 +204,21 @@ export default function App() {
         onSave={handleUpdateExamProfile}
       />
 
+      {/* 5. Google Drive Integration Modal */}
+      <GoogleDriveModal
+        isOpen={isDriveModalOpen}
+        onClose={() => setIsDriveModalOpen(false)}
+        onImportToNotes={handleImportFromDrive}
+        activeSubject={activeSubject}
+        currentNotesContent={driveModalPrefill?.content || ''}
+        currentNotesTitle={driveModalPrefill?.title || ''}
+      />
+
       {/* 5. Minimalist Academic Footer */}
       <footer className="mt-auto border-t border-slate-200 bg-white py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-800">StudyOrbit</span>
+            <span className="font-bold text-slate-800">KnowledgeDash</span>
             <span>•</span>
             <span>Maths, Physics, Chemistry, Biology Revision Workspace</span>
           </div>
@@ -200,6 +239,13 @@ export default function App() {
               className="hover:text-slate-800 transition-colors"
             >
               Quick Notes Simplifier
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => handleOpenDriveModal()}
+              className="hover:text-slate-800 transition-colors"
+            >
+              Google Drive
             </button>
             <span>•</span>
             <button

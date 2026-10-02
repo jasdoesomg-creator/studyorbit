@@ -10,8 +10,10 @@ import {
   CheckSquare,
   CalendarDays,
   Sparkles,
+  Cloud,
 } from 'lucide-react';
 import { SubjectType } from '../types';
+import { StudyStreakTracker } from './StudyStreakTracker';
 
 export type MainTab = 'syllabus' | 'notes' | 'quiz' | 'plan';
 
@@ -21,6 +23,7 @@ interface NavbarProps {
   activeTab: MainTab;
   onSelectTab: (t: MainTab) => void;
   onOpenExamModal: () => void;
+  onOpenDriveModal?: () => void;
   hasExam: boolean;
   daysRemaining: number;
 }
@@ -31,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onSelectTab,
   onOpenExamModal,
+  onOpenDriveModal,
   hasExam,
   daysRemaining,
 }) => {
@@ -84,7 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg font-bold tracking-tight text-slate-900">StudyOrbit</span>
+                <span className="text-lg font-bold tracking-tight text-slate-900">KnowledgeDash</span>
                 <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-slate-100 text-slate-700 border border-slate-200">
                   STEM Prep
                 </span>
@@ -114,11 +118,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </div>
 
-          {/* Exam Mode Toggle / Status */}
+          {/* Study Streak Tracker, Google Drive & Exam Mode Status */}
           <div className="flex items-center gap-2">
+            <StudyStreakTracker onNavigateToTab={onSelectTab} />
+
+            {onOpenDriveModal && (
+              <button
+                type="button"
+                onClick={onOpenDriveModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50/80 hover:bg-blue-100 text-blue-900 transition-colors shadow-2xs"
+                title="Connect or manage Google Drive"
+              >
+                <Cloud className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden sm:inline">Google Drive</span>
+              </button>
+            )}
+
             <button
               onClick={onOpenExamModal}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors shadow-2xs ${
                 hasExam
                   ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
                   : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'

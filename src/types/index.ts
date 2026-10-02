@@ -113,3 +113,28 @@ export interface StudyPlanResponse {
   phases: StudyPlanPhase[];
   topAdvice: string[];
 }
+
+export interface StudySessionRecord {
+  id: string;
+  type: 'quiz' | 'note';
+  subject: SubjectType;
+  title: string;
+  date: string; // YYYY-MM-DD
+  timestamp: number;
+  details?: string;
+}
+
+export interface StudyStreakData {
+  currentStreak: number;
+  longestStreak: number;
+  lastStudiedDate: string | null;
+  hasStudiedToday: boolean;
+  totalSessions: number;
+  recentDays: {
+    date: string;
+    dayLabel: string;
+    isToday: boolean;
+    hasStudied: boolean;
+  }[];
+}
+

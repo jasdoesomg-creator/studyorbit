@@ -41,7 +41,7 @@ export const ExamModal: React.FC<ExamModalProps> = ({ isOpen, onClose, profile, 
           <div>
             <h2 className="text-xl font-bold tracking-tight">Exam Preparation Settings</h2>
             <p className="text-xs text-indigo-200 mt-1">
-              Configure whether you have an upcoming test so StudyOrbit adapts your pace.
+              Configure whether you have an upcoming test so KnowledgeDash adapts your pace.
             </p>
           </div>
           <button
